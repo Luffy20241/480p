@@ -90,10 +90,8 @@ async def incoming_compress_message_f(update):
             (duration / 2)
         )
 
-        compress_start = await bot.send_message(
-            chat_id=update.chat.id,
-            text=Localisation.COMPRESS_START
-        )
+        # Update the message instead of sending a new one
+        await sent_message.edit_text(Localisation.COMPRESS_START)
 
         c_start = time.time()
         o = await convert_video(
@@ -102,17 +100,19 @@ async def incoming_compress_message_f(update):
             duration,
             bot,
             sent_message,
-            compress_start
+            sent_message  # Using the same message object
         )
         compressed_time = TimeFormatter((time.time() - c_start) * 1000)
 
         if o is None:
             raise ValueError("Compression failed.")
 
-        await compress_start.delete()
         u_start = time.time()
 
-        caption = Localisation.COMPRESS_SUCCESS.replace('{}', downloaded_time, 1).replace('{}', compressed_time, 1)
+        # Use the file name as the caption
+        file_name = os.path.basename(o)
+        caption = f"<blockquote>{file_name}</blockquote>\n\n<blockquote>Downloaded: {downloaded_time}\nCompressed: {compressed_time}</blockquote>"
+
         await bot.send_document(
             chat_id=update.chat.id,
             document=o,
