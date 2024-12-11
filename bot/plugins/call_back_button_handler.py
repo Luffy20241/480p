@@ -13,7 +13,7 @@ import os, signal
 import json
 import shutil
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.WARNING,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 LOGGER = logging.getLogger(__name__)
